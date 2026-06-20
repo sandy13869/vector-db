@@ -81,25 +81,23 @@ async function startServer() {
 
     app.listen(PORT, () => {
       console.log(`
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║         Vector Database API - Zvec Demo                     ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
 
-🚀 Server running on http://localhost:${PORT}
+  Vector Database API - Zvec Demo
+  Developer: Sandeep
 
-📚 API Documentation: http://localhost:${PORT}/api-docs
+  Server running on http://localhost:${PORT}
 
-📊 Health Check:
-   - Base: http://localhost:${PORT}/api/health
-   - Zvec Status: http://localhost:${PORT}/api/health/zvec
+  API Documentation: http://localhost:${PORT}/api-docs
 
-📝 Endpoints:
-   - Health: /api/health
-   - Documents: /api/documents
+  Health Check:
+    - Base: http://localhost:${PORT}/api/health
+    - Zvec Status: http://localhost:${PORT}/api/health/zvec
 
-Press Ctrl+C to stop the server
+  Endpoints:
+    - Health: /api/health
+    - Documents: /api/documents
+
+  Press Ctrl+C to stop the server
       `);
     });
   } catch (error) {

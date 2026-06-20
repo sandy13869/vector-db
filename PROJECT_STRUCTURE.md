@@ -1,74 +1,82 @@
 # Vector Database Demo - Project Structure
 
-## 📁 Complete File Structure
+Developer: Sandeep
+
+---
+
+## Complete File Structure
 
 ```
 vector-db/
-├── .commandcode/              # Command Code configuration (hidden)
-├── .git/
-├── .gitignore                 # Git ignore rules (strict security)
-├── .env                       # Environment variables (gitignored)
-├── index.js                   # Original file (empty, kept for reference)
-├── package.json               # Project dependencies and scripts
-├── package-lock.json          # Dependency lock file
-├── README.md                  # Complete documentation
-├── PROJECT_STRUCTURE.md       # This file
-├── test-api.js                # API testing script
-├── node_modules/              # Dependencies (gitignored)
-├── src/                       # Source code directory
-│   ├── index.js              # Application entry point
-│   ├── config/               # Configuration files
-│   │   ├── database.js       # Zvec database service layer
-│   │   └── swagger.js        # Swagger API documentation config
-│   ├── middleware/           # Express middleware
-│   │   ├── errorHandler.js   # Global error handler
-│   │   └── requestLogger.js  # Request logging middleware
-│   ├── routes/               # API routes
-│   │   ├── health.js         # Health check endpoints
-│   │   └── documents.js      # Document management endpoints
-│   └── utils/                # Utility functions
-│       └── demoData.js       # Demo data initialization
-└── public/                   # Static files directory
+  .commandcode/              # Command Code configuration (hidden)
+  .git/
+  .gitignore                 # Git ignore rules (strict security)
+  .env                       # Environment variables (gitignored)
+  index.js                   # Original file (empty, kept for reference)
+  package.json               # Project dependencies and scripts
+  package-lock.json          # Dependency lock file
+  README.md                  # Complete documentation
+  PROJECT_STRUCTURE.md       # This file
+  test-api.js                # API testing script
+  node_modules/              # Dependencies (gitignored)
+  src/
+    index.js                 # Application entry point
+    config/
+      database.js            # Zvec database service layer
+      swagger.js             # Swagger API documentation config
+    middleware/
+      errorHandler.js        # Global error handler
+      requestLogger.js       # Request logging middleware
+    routes/
+      health.js              # Health check endpoints
+      documents.js           # Document management endpoints
+    utils/
+      demoData.js            # Demo data initialization
+  public/                    # Static files directory
 ```
 
-## 🏗️ Architecture Overview
+---
 
-### 1. Application Entry Point (`src/index.js`)
+## Architecture Overview
+
+### 1. Application Entry Point (src/index.js)
 - Initializes Express app
 - Configures middleware (helmet, cors, body parsers)
 - Sets up routes
 - Initializes database and loads demo data
 - Starts server
 
-### 2. Database Service (`src/config/database.js`)
+### 2. Database Service (src/config/database.js)
 - Singleton pattern for database connection
 - Manages Zvec collections
 - Provides CRUD operations for vector data
 - Handles optimization and statistics
 
-### 3. API Routes (`src/routes/`)
-- **Health Routes** (`health.js`):
+### 3. API Routes (src/routes/)
+- **Health Routes** (health.js):
   - Basic health check
   - Zvec database connection status
-- **Documents Routes** (`documents.js`):
+- **Documents Routes** (documents.js):
   - Insert documents (bulk and single)
   - Query documents by vector similarity
   - Fetch documents by ID
   - Delete documents (by ID, batch, or filter)
   - Get collection statistics
 
-### 4. Middleware (`src/middleware/`)
+### 4. Middleware (src/middleware/)
 - **Request Logger**: Logs all HTTP requests
 - **Error Handler**: Centralized error handling
 
-### 5. Configuration (`src/config/`)
+### 5. Configuration (src/config/)
 - **Database Configuration**: Zvec schema and connection
 - **Swagger Configuration**: OpenAPI documentation
 
-### 6. Utilities (`src/utils/`)
+### 6. Utilities (src/utils/)
 - **Demo Data**: Pre-loaded sample documents for testing
 
-## 🔄 Data Flow
+---
+
+## Data Flow
 
 1. **Initialization**:
    - Application starts
@@ -87,7 +95,9 @@ vector-db/
    - Data is persisted to disk
    - Index is optimized for fast queries
 
-## 📡 API Endpoints Summary
+---
+
+## API Endpoints Summary
 
 ### Health
 - `GET /` - Application info
@@ -104,7 +114,9 @@ vector-db/
 - `POST /api/documents/filter` - Delete by filter
 - `GET /api/documents/stats` - Get statistics
 
-## 🚀 Quick Start
+---
+
+## Quick Start
 
 1. Install dependencies:
 ```bash
@@ -125,7 +137,9 @@ npm start
 node test-api.js
 ```
 
-## 📊 Zvec Configuration
+---
+
+## Zvec Configuration
 
 - **Collection Name**: `documents`
 - **Vector Dimensions**: 768
@@ -133,7 +147,9 @@ node test-api.js
 - **Metric**: Cosine Similarity
 - **Storage**: Persistent with WAL (Write-Ahead Logging)
 
-## 🔒 Security Features
+---
+
+## Security Features
 
 - Helmet.js for HTTP security headers
 - CORS enabled for cross-origin requests
@@ -141,21 +157,25 @@ node test-api.js
 - Input validation in routes
 - Error messages sanitized for production
 
-## 📝 Key Features Implemented
+---
 
-✅ Complete REST API with CRUD operations
-✅ Swagger/OpenAPI documentation
-✅ Health check endpoints
-✅ Error handling middleware
-✅ Request logging
-✅ Demo data initialization
-✅ Vector similarity search
-✅ Filtering capabilities
-✅ Persistent storage
-✅ Clean architecture
-✅ Well-organized code structure
+## Key Features Implemented
 
-## 🎯 Next Steps
+- Complete REST API with CRUD operations
+- Swagger/OpenAPI documentation
+- Health check endpoints
+- Error handling middleware
+- Request logging
+- Demo data initialization
+- Vector similarity search
+- Filtering capabilities
+- Persistent storage
+- Clean architecture
+- Well-organized code structure
+
+---
+
+## Next Steps
 
 To extend this application:
 

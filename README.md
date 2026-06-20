@@ -2,23 +2,31 @@
 
 A production-ready demo application showcasing vector database functionality using the Zvec library by Alibaba. This application provides a complete API for managing vector embeddings, performing similarity searches, and handling vector data operations.
 
-## 🚀 Features
+Developer: Sandeep
+
+---
+
+## Features
 
 - **Vector Database Integration**: Powered by Zvec - a high-performance, in-process vector database
 - **RESTful API**: Complete CRUD operations for vector data
-- **Swagger Documentation**: Interactive API documentation at `/api-docs`
+- **Swagger Documentation**: Interactive API documentation at /api-docs
 - **Health Check Endpoints**: Monitor application and database status
 - **Error Handling**: Comprehensive error handling and logging
 - **Security**: Helmet.js for HTTP security headers
 - **Clean Architecture**: Well-organized folder structure with separation of concerns
 - **Demo Data**: Pre-loaded sample data for immediate testing
 
-## 📋 Prerequisites
+---
+
+## Prerequisites
 
 - Node.js 18.x or higher
 - npm or yarn package manager
 
-## 🛠️ Installation
+---
+
+## Installation
 
 1. Clone the repository:
 ```bash
@@ -37,7 +45,9 @@ PORT=3000
 NODE_ENV=development
 ```
 
-## 🚦 Running the Application
+---
+
+## Running the Application
 
 ### Development Mode
 ```bash
@@ -51,12 +61,16 @@ npm start
 
 The application will start on `http://localhost:3000` by default.
 
-## 📚 API Documentation
+---
+
+## API Documentation
 
 Interactive Swagger UI documentation is available at:
 - **http://localhost:3000/api-docs**
 
-## 📡 API Endpoints
+---
+
+## API Endpoints
 
 ### Health Check
 
@@ -160,32 +174,36 @@ Content-Type: application/json
 GET /api/documents/stats?collectionName=documents
 ```
 
-## 📁 Project Structure
+---
+
+## Project Structure
 
 ```
 vector-db/
-├── src/
-│   ├── config/
-│   │   ├── database.js      # Zvec database service
-│   │   └── swagger.js       # Swagger documentation configuration
-│   ├── middleware/
-│   │   ├── errorHandler.js  # Error handling middleware
-│   │   └── requestLogger.js # Request logging middleware
-│   ├── routes/
-│   │   ├── health.js        # Health check endpoints
-│   │   └── documents.js     # Document management endpoints
-│   ├── utils/
-│   │   └── demoData.js      # Demo data initialization
-│   └── index.js             # Application entry point
-├── public/                  # Static files
-├── zvec_data/               # Zvec database files (auto-generated)
-├── .env                     # Environment variables
-├── .gitignore               # Git ignore rules
-├── package.json             # Project dependencies
-└── README.md                # This file
+  src/
+    config/
+      database.js      # Zvec database service
+      swagger.js       # Swagger documentation configuration
+    middleware/
+      errorHandler.js  # Error handling middleware
+      requestLogger.js # Request logging middleware
+    routes/
+      health.js        # Health check endpoints
+      documents.js     # Document management endpoints
+    utils/
+      demoData.js      # Demo data initialization
+    index.js           # Application entry point
+  public/              # Static files
+  zvec_data/           # Zvec database files (auto-generated)
+  .env                 # Environment variables
+  .gitignore           # Git ignore rules
+  package.json         # Project dependencies
+  README.md            # This file
 ```
 
-## 🔧 Configuration
+---
+
+## Configuration
 
 ### Environment Variables
 
@@ -209,7 +227,9 @@ The database schema is configured in `src/config/database.js`:
 - **Vectors**:
   - `embedding`: Float32 vector (768 dimensions)
 
-## 🧪 Testing the API
+---
+
+## Testing the API
 
 ### Using cURL
 
@@ -250,7 +270,9 @@ curl http://localhost:3000/api/health
 1. Import the Swagger documentation: `http://localhost:3000/api-docs`
 2. Use the interactive UI to test all endpoints
 
-## 📊 Zvec Features
+---
+
+## Zvec Features
 
 This application demonstrates the following Zvec capabilities:
 
@@ -261,26 +283,38 @@ This application demonstrates the following Zvec capabilities:
 - **Persistent Storage**: Data is persisted to disk using write-ahead logging
 - **Concurrent Access**: Support for multiple read operations simultaneously
 
-## 🔒 Security
+---
+
+## Security
 
 - **Helmet.js**: Security headers middleware
 - **CORS**: Cross-Origin Resource Sharing configured
 - **Environment Variables**: Sensitive data stored in `.env` file (gitignored)
 - **Input Validation**: Request validation and error handling
 
-## 📝 License
+---
+
+## License
 
 ISC
 
-## 🤝 Contributing
+Developer: Sandeep
+
+---
+
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📧 Contact
+---
 
-For support, email support@vector-db.example.com
+## Contact
 
-## 🌟 Acknowledgments
+Developer: Sandeep
+
+---
+
+## Acknowledgments
 
 - Built with [Zvec](https://github.com/alibaba/zvec) - Alibaba's vector database
 - Powered by [Express.js](https://expressjs.com/)

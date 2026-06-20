@@ -17,8 +17,8 @@ Demo vector database application using **Zvec** — a lightweight, lightning-fas
 - **Hybrid Filtering** — SQL-like filter expressions (\`year > 2020\`)
 `,
       contact: {
-        name: "API Support",
-        email: "support@vector-db.example.com"
+        name: "Sandeep",
+        url: "https://github.com/sandy13869"
       },
       license: {
         name: "ISC",
