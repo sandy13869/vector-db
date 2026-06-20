@@ -79,5 +79,4 @@ private-keys.pem
 ehthumbs.db
 Thumbs.db
 
-.commandcode/*
-*.commandcode
+.commandcode/
