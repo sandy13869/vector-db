@@ -1,33 +1,61 @@
-# 🧠 RAG Interactive PDF Documents
+<div align="center">
 
-> **Retrieval-Augmented Generation pipeline for PDF document analysis** —  
-> Upload, index, and semantically search PDF documents using local vector embeddings and Alibaba's high-performance Zvec vector database.
+# 🤖 AIrah — RAG Interactive PDF Assistant
+
+### *Retrieval-Augmented Generation pipeline for intelligent PDF document analysis*
+
+Upload, index, and semantically search PDF documents using local vector embeddings with **AIrah** — your intelligent document companion.
+
+<br />
 
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-5.2-000000?logo=express&logoColor=white)](https://expressjs.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Zvec](https://img.shields.io/badge/Zvec-0.5-FF6F00?logo=alibabacloud&logoColor=white)](https://github.com/alibaba/zvec)
+[![Transformers](https://img.shields.io/badge/Transformers.js-2.17-F3A723?logo=huggingface&logoColor=white)](https://github.com/xenova/transformers.js)
+[![Swagger](https://img.shields.io/badge/Swagger-6.x-85EA2D?logo=swagger&logoColor=white)](https://swagger.io)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg)](LICENSE)
+
+### 🧠 Tech Stack
+
+| Runtime | Backend | Vector DB | Embeddings | Frontend | Bundler | Styling |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Node.js 18+** | **Express 5.2** | **@zvec/zvec** | **all-MiniLM-L6-v2** | **React 18** | **Vite 5.4** | **Tailwind 3.4** |
+
+</div>
 
 ---
 
-## ✨ Top Skills & Technologies
+## 📸 Screenshots
 
-| Category | Technology | Version |
-|---|---|---|
-| **Runtime** | [Node.js](https://nodejs.org) | 18+ |
-| **Backend Framework** | [Express](https://expressjs.com) | 5.2 |
-| **Vector Database** | [@zvec/zvec](https://github.com/alibaba/zvec) (Alibaba) | 0.5 |
-| **Embeddings** | [@xenova/transformers](https://github.com/xenova/transformers.js) (all-MiniLM-L6-v2) | 2.17 |
-| **PDF Parsing** | [pdf-parse](https://www.npmjs.com/package/pdf-parse) | 1.1 |
-| **Frontend** | [React](https://react.dev) | 18.3 |
-| **Bundler** | [Vite](https://vite.dev) | 5.4 |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com) | 3.4 |
-| **API Documentation** | [Swagger UI](https://swagger.io) + [swagger-jsdoc](https://github.com/Surnet/swagger-jsdoc) | 6.x |
-| **Security** | [Helmet](https://helmetjs.github.io) / [CORS](https://github.com/expressjs/cors) | 8.x / 2.8 |
-| **Logging** | [Morgan](https://github.com/expressjs/morgan) | 1.10 |
-| **File Uploads** | [Multer](https://github.com/expressjs/multer) (memory storage) | 1.4 |
-| **Testing** | [Node Test Runner](https://nodejs.org/api/test.html) | Built-in |
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <strong>☀️ Light Theme</strong><br /><br />
+        <a href="https://github.com/sandy13869/demoRoomApp/blob/main/.github/rag-pdf-lite.png">
+          <img src="https://github.com/sandy13869/demoRoomApp/blob/main/.github/rag-pdf-lite.png" alt="Light Theme UI" width="95%" />
+        </a>
+      </td>
+      <td align="center" width="50%">
+        <strong>🌙 Dark Theme</strong><br /><br />
+        <a href="https://github.com/sandy13869/demoRoomApp/blob/main/.github/rag-pdf-dark.png">
+          <img src="https://github.com/sandy13869/demoRoomApp/blob/main/.github/rag-pdf-dark.png" alt="Dark Theme UI" width="95%" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" colspan="2">
+        <strong>🎯 Demo — Ask AIrah Anything</strong><br /><br />
+        <a href="https://github.com/sandy13869/demoRoomApp/blob/main/.github/rag-pdf-dark2.png">
+          <img src="https://github.com/sandy13869/demoRoomApp/blob/main/.github/rag-pdf-dark2.png" alt="Demo interaction" width="95%" />
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
@@ -49,7 +77,7 @@
 
 ## 🔭 Overview
 
-**RAG Interactive PDF Documents** is a full-stack, production-grade application that enables semantic search over PDF content using Retrieval-Augmented Generation (RAG) principles. It extracts text from uploaded PDFs, generates vector embeddings locally via transformer models, and stores them in Alibaba's **Zvec** — a lightning-fast, in-process vector database.
+**AIrah** is a full-stack, production-grade application that enables semantic search over PDF content using Retrieval-Augmented Generation (RAG) principles. It extracts text from uploaded PDFs, generates vector embeddings locally via transformer models, and stores them in Alibaba's **Zvec** — a lightning-fast, in-process vector database.
 
 Users can upload PDFs, ask natural-language questions, and retrieve the most semantically relevant passages with similarity scores — all without sending data to external APIs or relying on cloud infrastructure.
 
@@ -59,12 +87,17 @@ Users can upload PDFs, ask natural-language questions, and retrieve the most sem
 
 ## 🚀 Features
 
-- **📄 PDF Upload & Ingestion** — 50 MB limit with PDF signature validation and page-aware text extraction
+- **🤖 AIrah — Your Intelligent Assistant** — Named interactive agent with personalized responses, sound effects, and contextual guidance
+- **📄 PDF Upload & Ingestion** — 50 MB limit with PDF signature validation, page-aware text extraction, and 10-file maximum
 - **🔍 Semantic Search** — Ask questions and retrieve the most relevant passages with configurable scoring thresholds
-- **🧠 Local Embeddings** — 384-dimensional vectors via `Xenova/all-MiniLM-L6-v2`, no external API calls
+- **🧠 Local Embeddings** — 384-dimensional vectors via `Xenova/all-MiniLM-L6-v2`, no external API calls, batched inference for speed
 - **⚡ In-Process Vector DB** — Zvec runs inside your application process with zero infrastructure overhead
 - **📂 Scoped or Cross-Document Retrieval** — Search across all PDFs or narrow to a single document
-- **🎨 Modern UI** — Responsive React + Tailwind CSS interface with real-time search results
+- **🔎 Multi-Query Retrieval** — Automatically reformulates your question into 3–6 search variants for higher recall
+- **✏️ Smart Query Preprocessor** — Fixes spelling mistakes, expands contractions/abbreviations, and enriches queries with synonyms for better matching
+- **💡 Intelligent "No Match" Suggestions** — When no relevant content is found, AIrah suggests clickable questions tailored to your uploaded PDFs
+- **🎨 Stunning UI** — Dark/light theme with smooth animations, react-markdown rendering, and syntax-highlighted code blocks
+- **🔊 Interactive Sound Effects** — Web Audio API synthesizer provides click, send, response, error, and success sounds
 - **📊 Swagger API Explorer** — Interactive API documentation at `/api-docs`
 - **🔒 Enterprise-Grade Security** — Helmet headers, configurable CORS, request logging, and structured JSON error responses
 - **🧪 Deterministic Testing** — Comprehensive test suite using Node's built-in test runner
@@ -150,7 +183,7 @@ Create a `.env` file from the template:
 ```env
 PORT=3000
 NODE_ENV=development
-RAG_SCORE_THRESHOLD=0.2
+RAG_SCORE_THRESHOLD=0.15
 ZVEC_DATA_PATH=./zvec_data
 # CORS_ORIGIN=http://localhost:5173
 ```
@@ -161,7 +194,7 @@ ZVEC_DATA_PATH=./zvec_data
 |---|---|---|
 | `PORT` | `3000` | HTTP server port |
 | `NODE_ENV` | unset | Set to `development` for stack traces in API errors |
-| `RAG_SCORE_THRESHOLD` | `0.2` | Minimum cosine-similarity score for a passage to be returned |
+| `RAG_SCORE_THRESHOLD` | `0.15` | Minimum cosine-similarity score for a passage to be returned |
 | `ZVEC_DATA_PATH` | `./zvec_data` | Persistent Zvec collections and PDF registry location |
 | `CORS_ORIGIN` | all origins | Restrict browser origin when explicitly configured |
 
@@ -174,11 +207,14 @@ ZVEC_DATA_PATH=./zvec_data
 1. **Upload** a text-based PDF via the UI or `POST /api/pdf/upload`
 2. **Extract** text page by page using `pdf-parse`
 3. **Chunk** text into segments of up to 1,000 characters with 200-character overlap
-4. **Embed** each chunk into a normalized 384-dimensional vector using `all-MiniLM-L6-v2`
-5. **Store** chunks and metadata in the `pdf_chunks` Zvec collection
-6. **Query** — user questions are embedded with the same model and matched against stored chunks
-7. **Filter** — results below `RAG_SCORE_THRESHOLD` are omitted
-8. **Display** — ranked passages are returned to the UI with similarity scores
+4. **Embed** each chunk into a normalized 384-dimensional vector using `all-MiniLM-L6-v2` (batched 32 at a time)
+5. **Store** chunks and metadata in the `pdf_chunks` Zvec collection (batched 1024 at a time)
+6. **Preprocess** — user query is cleaned: spelling corrected, contractions/abbreviations expanded, and synonyms appended
+7. **Reformulate** — the cleaned query is expanded into 3–6 search variants (who/what/where/when/why/how/describe patterns)
+8. **Multi-Query Embedding** — all search variants are embedded and each is searched independently against the vector DB
+9. **Merge & Deduplicate** — results from all variants are merged, deduplicated by text, and the best score per chunk is kept
+10. **Filter** — results below `RAG_SCORE_THRESHOLD` are omitted; if none remain, AIrah suggests contextual questions to the user
+11. **Display** — ranked passages are returned to the UI with similarity scores and collapsible source citations
 
 > **Note:** Scanned/image-only PDFs are not OCR-processed and will return HTTP 422 due to missing extractable text.
 
@@ -206,6 +242,7 @@ All JSON responses include a `success` boolean. Errors follow a consistent schem
 | `npm start` | Start the production Express server |
 | `npm run dev` | Start the server with Nodemon for hot-reload |
 | `npm run dev:client` | Start the Vite development server |
+| `npm run dev:all` | Start both Express API + Vite dev server concurrently |
 | `npm run build` | Build the React client for production |
 | `npm test` | Run the PDF chunking test suite |
 | `npm run check` | Run tests and build the client |
@@ -223,6 +260,8 @@ All JSON responses include a `success` boolean. Errors follow a consistent schem
 │   │   │   ├── DocumentList.jsx    # Uploaded documents list
 │   │   │   └── UploadPanel.jsx     # PDF upload component
 │   │   ├── api.js                  # API client utilities
+│   │   ├── utils/
+│   │   │   └── sounds.js           # Web Audio API sound synthesizer
 │   │   └── App.jsx                 # Main application layout
 │   └── vite.config.js              # Vite config + dev proxy
 ├── src/                             # Express backend
@@ -243,7 +282,8 @@ All JSON responses include a `success` boolean. Errors follow a consistent schem
 │   │   ├── embeddingService.js     # Embedding generation
 │   │   ├── fileHandling.js         # Standalone PDF indexing
 │   │   ├── pdfService.js           # PDF processing pipeline
-│   │   └── ragService.js           # Retrieval logic
+│   │   ├── queryPreprocessor.js    # Spell correction + synonym enrichment
+│   │   └── ragService.js           # RAG orchestration + multi-query retrieval
 │   ├── utils/
 │   │   └── demoData.js             # Sample data seeding
 │   └── index.js                    # Express app entry point
@@ -295,9 +335,10 @@ All JSON responses include a `success` boolean. Errors follow a consistent schem
 ## 📄 License
 
 This project is licensed under the **ISC License**. See the [LICENSE](LICENSE) file for details.
-- The production UI is available only after `npm run build` creates `client/dist`.
 
-## Security
+---
+
+## 🛡 Security
 
 - Helmet configures common HTTP security headers.
 - CORS can be restricted with `CORS_ORIGIN`.
@@ -306,9 +347,3 @@ This project is licensed under the **ISC License**. See the [LICENSE](LICENSE) f
 - Filenames are sanitized before being persisted.
 - API inputs, vector dimensions, numeric values, IDs, and query limits are validated.
 - `.env` and `zvec_data/` are excluded from version control.
-
-## License
-
-ISC
-
-Developer: Sandeep
