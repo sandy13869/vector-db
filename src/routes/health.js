@@ -72,14 +72,17 @@ router.get("/", (req, res) => {
 router.get("/zvec", async (req, res) => {
   try {
     const DatabaseService = require("../config/database");
-    const stats = await DatabaseService.getStats("documents");
+    const [documents, pdfChunks] = await Promise.all([
+      DatabaseService.getStats("documents"),
+      DatabaseService.getStats("pdf_chunks")
+    ]);
 
     res.json({
       success: true,
       status: "zvec-connected",
       timestamp: new Date().toISOString(),
       version: "1.0.0",
-      zvec: { documents: stats }
+      zvec: { documents, pdfChunks }
     });
   } catch (error) {
     res.status(500).json({ success: false, error: { message: error.message } });

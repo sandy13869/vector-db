@@ -29,6 +29,9 @@ A production-ready demo application showcasing vector database functionality usi
 
 ## Features
 
+- **PDF Question Answering (RAG)** — Upload a PDF (≤ 50 MB), it is chunked, embedded, and stored in the vector DB; ask natural-language questions and get answers retrieved from the document
+- **Relevance gating** — When nothing relevant is found, the API responds with `found: false` and a clear message instead of returning noise
+- **React UI** — Vite + Tailwind single-page app for drag-and-drop upload and a chat-style Q&A interface (`client/`)
 - Vector Database Integration — Zvec high-performance in-process vector DB
 - RESTful API — Full CRUD for vector data
 - Swagger Documentation — Interactive UI at `/api-docs`
@@ -45,10 +48,14 @@ A production-ready demo application showcasing vector database functionality usi
 ```bash
 npm install
 cp .env.example .env    # or create .env manually (see Configuration)
-npm run dev
+npm run build
+npm start
 ```
 
-Open http://localhost:3000
+Open http://localhost:3000 for the UI or http://localhost:3000/api-docs for the API explorer.
+
+> The first call to `/api/pdf/upload` or `/api/pdf/ask` downloads the
+> `all-MiniLM-L6-v2` embedding model (~90 MB) once and caches it locally.
 
 ---
 
@@ -63,6 +70,27 @@ Interactive Swagger UI: http://localhost:3000/api-docs
 | GET | `/api/health` | Basic health status |
 | GET | `/api/health/zvec` | Zvec database connection stats |
 
+### PDF Question Answering
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/pdf/upload` | Upload + ingest a PDF (`multipart/form-data`, field `file`, ≤ 50 MB) |
+| POST | `/api/pdf/ask` | Ask a question; retrieves relevant chunks from ingested PDFs |
+| GET | `/api/pdf/documents` | List ingested PDFs |
+| DELETE | `/api/pdf/documents/:docId` | Delete an ingested PDF and its chunks |
+
+**Ask response** — when relevant content is found:
+
+```json
+{ "success": true, "found": true, "question": "...", "answer": "...", "matches": [ { "score": 0.82, "text": "...", "source": "doc.pdf", "page": 3, "docId": "..." } ] }
+```
+
+When nothing relevant is found:
+
+```json
+{ "success": true, "found": false, "message": "No relevant information for your question was found in the uploaded PDF(s)...", "matches": [] }
+```
+
 ### Documents
 
 | Method | Path | Description |
@@ -72,8 +100,8 @@ Interactive Swagger UI: http://localhost:3000/api-docs
 | POST | `/api/documents/query` | Vector similarity search |
 | GET | `/api/documents/fetch/:id` | Fetch document by ID |
 | DELETE | `/api/documents/:id` | Delete document by ID |
-| POST | `/api/documents/batch` | Batch delete by IDs |
-| POST | `/api/documents/filter` | Delete by filter condition |
+| DELETE | `/api/documents/batch` | Batch delete by IDs |
+| DELETE | `/api/documents/filter` | Delete by filter condition |
 | GET | `/api/documents/stats` | Collection statistics |
 
 ---
@@ -83,6 +111,11 @@ Interactive Swagger UI: http://localhost:3000/api-docs
 ```env
 PORT=3000
 NODE_ENV=development
+# Minimum cosine similarity for a PDF chunk to count as a relevant answer (default 0.2)
+RAG_SCORE_THRESHOLD=0.2
+# Optional persistent-data location and browser origin
+ZVEC_DATA_PATH=./zvec_data
+CORS_ORIGIN=http://localhost:5173
 ```
 
 ---
@@ -91,7 +124,7 @@ NODE_ENV=development
 
 - **Collection**: `documents`
 - **Vector Dimensions**: 768 (float32)
-- **Metric**: Cosine Similarity
+- **Metric**: Inner product (equivalent to cosine similarity for normalized embeddings)
 - **Index**: HNSW
 - **Storage**: Persistent (write-ahead logging)
 
@@ -123,18 +156,48 @@ curl http://localhost:3000/api/health/zvec
 ```
 src/
   config/
-    database.js      Zvec database service
-    swagger.js       Swagger/OpenAPI config
+    database.js        Zvec database service (documents + pdf_chunks collections)
+    swagger.js         Swagger/OpenAPI config
   middleware/
-    errorHandler.js  Global error handler
-    requestLogger.js Morgan request logging
+    errorHandler.js    Global error handler
+    requestLogger.js   Morgan request logging
+    upload.js          Multer PDF upload (50 MB limit, PDF-only)
   routes/
-    health.js        Health endpoints
-    documents.js     Document CRUD + query
+    health.js          Health endpoints
+    documents.js       Document CRUD + query
+    pdf.js             PDF upload / ask / list / delete
+  services/
+    embeddingService.js  all-MiniLM-L6-v2 text embeddings (384-d)
+    pdfService.js        PDF text extraction + chunking
+    ragService.js        Ingest + retrieval + document registry
   utils/
-    demoData.js      12-sample-doc seeder
-  index.js           Express app entry point
+    demoData.js        12-sample-doc seeder
+  index.js             Express app entry point
+
+client/                React + Vite + Tailwind UI
+  src/
+    api.js             Backend API client
+    App.jsx            Layout (upload + document list + chat)
+    components/        UploadPanel, DocumentList, ChatPanel
 ```
+
+---
+
+## Frontend (React + Vite + Tailwind)
+
+A single-page UI lives in [client/](client/): drag-and-drop PDF upload with progress,
+a document list (scope questions to one PDF or search all), and a chat-style Q&A panel
+that shows answers with their source passages and similarity scores.
+
+```bash
+# terminal 1
+npm run dev
+
+# terminal 2
+npm run dev:client  # http://localhost:5173, proxies /api to :3000
+```
+
+For production, `npm run build && npm start` serves the compiled UI and API from port 3000.
 
 ---
 

@@ -2,6 +2,32 @@ const express = require("express");
 const router = express.Router();
 const DatabaseService = require("../config/database");
 
+const COLLECTION = "documents";
+const VECTOR_DIMENSION = 768;
+
+function validateCollection(collectionName) {
+  return collectionName === COLLECTION ? null : `collectionName must be '${COLLECTION}'`;
+}
+
+function validateVector(vector, label = "embedding") {
+  if (!Array.isArray(vector) || vector.length !== VECTOR_DIMENSION) {
+    return `${label} must be an array of ${VECTOR_DIMENSION} numbers`;
+  }
+  if (!vector.every(Number.isFinite)) return `${label} must contain only finite numbers`;
+  return null;
+}
+
+function validateDocument(document) {
+  if (!document || typeof document !== "object" || Array.isArray(document)) return "Document is required";
+  if (!document.id || typeof document.id !== "string") return "Document id is required";
+  if (document.year !== undefined && !Number.isInteger(document.year)) return "Document year must be an integer";
+  return validateVector(document.embedding);
+}
+
+function badRequest(res, message) {
+  return res.status(400).json({ success: false, error: { message } });
+}
+
 /**
  * @openapi
  * /api/documents/insert:
@@ -54,16 +80,19 @@ const DatabaseService = require("../config/database");
  */
 router.post("/insert", async (req, res, next) => {
   try {
-    const { collectionName, documents } = req.body;
+    const { collectionName, documents } = req.body || {};
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
     if (!documents || !Array.isArray(documents)) {
       return res.status(400).json({ success: false, error: { message: "Documents array is required" } });
     }
     if (documents.length === 0) {
       return res.status(400).json({ success: false, error: { message: "Documents array cannot be empty" } });
+    }
+    for (const document of documents) {
+      const validationError = validateDocument(document);
+      if (validationError) return badRequest(res, validationError);
     }
 
     const result = await DatabaseService.insertDocuments(collectionName, documents);
@@ -126,14 +155,12 @@ router.post("/insert", async (req, res, next) => {
  */
 router.post("/insert-one", async (req, res, next) => {
   try {
-    const { collectionName, document } = req.body;
+    const { collectionName, document } = req.body || {};
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
-    if (!document) {
-      return res.status(400).json({ success: false, error: { message: "Document is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
+    const validationError = validateDocument(document);
+    if (validationError) return badRequest(res, validationError);
 
     await DatabaseService.insertDocument(collectionName, document);
 
@@ -198,14 +225,14 @@ router.post("/insert-one", async (req, res, next) => {
  */
 router.post("/query", async (req, res, next) => {
   try {
-    const { collectionName, queryVector, topk = 10, filter = null } = req.body;
+    const { collectionName, queryVector, topk = 10, filter = null } = req.body || {};
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
-    if (!queryVector || !Array.isArray(queryVector)) {
-      return res.status(400).json({ success: false, error: { message: "Query vector is required and must be an array" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
+    const vectorError = validateVector(queryVector, "queryVector");
+    if (vectorError) return badRequest(res, vectorError);
+    if (!Number.isInteger(topk) || topk < 1 || topk > 100) return badRequest(res, "topk must be an integer from 1 to 100");
+    if (filter !== null && typeof filter !== "string") return badRequest(res, "filter must be a string");
 
     const results = await DatabaseService.query(collectionName, queryVector, topk, filter);
 
@@ -275,9 +302,8 @@ router.get("/fetch/:id", async (req, res, next) => {
     const { collectionName } = req.query;
     const { id } = req.params;
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
 
     const result = await DatabaseService.fetch(collectionName, id);
 
@@ -333,12 +359,12 @@ router.get("/fetch/:id", async (req, res, next) => {
  */
 router.delete("/:id", async (req, res, next) => {
   try {
+    if (req.params.id === "batch" || req.params.id === "filter") return next();
     const { collectionName } = req.query;
     const { id } = req.params;
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
 
     const result = await DatabaseService.deleteDocument(collectionName, id);
 
@@ -388,13 +414,15 @@ router.delete("/:id", async (req, res, next) => {
  */
 router.delete("/batch", async (req, res, next) => {
   try {
-    const { collectionName, ids } = req.body;
+    const { collectionName, ids } = req.body || {};
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
     if (!ids || !Array.isArray(ids)) {
       return res.status(400).json({ success: false, error: { message: "IDs array is required" } });
+    }
+    if (ids.length === 0 || !ids.every((id) => typeof id === "string" && id)) {
+      return badRequest(res, "IDs array must contain at least one non-empty string");
     }
 
     const result = await DatabaseService.deleteDocuments(collectionName, ids);
@@ -444,11 +472,10 @@ router.delete("/batch", async (req, res, next) => {
  */
 router.delete("/filter", async (req, res, next) => {
   try {
-    const { collectionName, filter } = req.body;
+    const { collectionName, filter } = req.body || {};
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
     if (!filter) {
       return res.status(400).json({ success: false, error: { message: "Filter condition is required" } });
     }
@@ -502,9 +529,8 @@ router.get("/stats", async (req, res, next) => {
   try {
     const { collectionName } = req.query;
 
-    if (!collectionName) {
-      return res.status(400).json({ success: false, error: { message: "Collection name is required" } });
-    }
+    const collectionError = validateCollection(collectionName);
+    if (collectionError) return badRequest(res, collectionError);
 
     const stats = await DatabaseService.getStats(collectionName);
 

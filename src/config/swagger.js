@@ -27,6 +27,10 @@ Demo vector database application using **Zvec** — a lightweight, lightning-fas
     },
     servers: [
       {
+        url: "/",
+        description: "Current server"
+      },
+      {
         url: "http://localhost:3000",
         description: "Development server"
       }
@@ -303,6 +307,65 @@ Demo vector database application using **Zvec** — a lightweight, lightning-fas
           properties: {
             collectionName: { type: "string", example: "documents" },
             filter: { type: "string", example: "year < 2020", description: "Filter condition to match documents for deletion" }
+          }
+        },
+
+        // ---------- PDF ----------
+        PdfDocument: {
+          type: "object",
+          properties: {
+            docId: { type: "string", example: "3f6c1c2a-9b1e-4f0a-bc12-2e6d8f1a0c34" },
+            filename: { type: "string", example: "report.pdf" },
+            sizeBytes: { type: "integer", example: 482113 },
+            numPages: { type: "integer", example: 12 },
+            chunkCount: { type: "integer", example: 34 },
+            uploadedAt: { type: "string", format: "date-time", example: "2026-06-21T10:00:00.000Z" }
+          }
+        },
+        PdfUploadResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: true },
+            message: { type: "string", example: "PDF ingested successfully" },
+            data: { $ref: "#/components/schemas/PdfDocument" }
+          }
+        },
+        PdfListResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: true },
+            count: { type: "integer", example: 1 },
+            data: { type: "array", items: { $ref: "#/components/schemas/PdfDocument" } }
+          }
+        },
+        AskRequest: {
+          type: "object",
+          required: ["question"],
+          properties: {
+            question: { type: "string", example: "What is the refund policy?", description: "Natural-language question" },
+            docId: { type: "string", description: "Optional: restrict the search to a single uploaded PDF" },
+            topk: { type: "integer", default: 4, minimum: 1, maximum: 20, description: "Number of chunks to retrieve" }
+          }
+        },
+        AskMatch: {
+          type: "object",
+          properties: {
+            score: { type: "number", format: "float", example: 0.82, description: "Cosine similarity (higher = more relevant)" },
+            text: { type: "string", example: "Refunds are issued within 30 days..." },
+            source: { type: "string", example: "policy.pdf" },
+            page: { type: "integer", example: 3 },
+            docId: { type: "string", example: "3f6c1c2a-..." }
+          }
+        },
+        AskResponse: {
+          type: "object",
+          properties: {
+            success: { type: "boolean", example: true },
+            found: { type: "boolean", example: true, description: "False when no chunk passes the relevance threshold" },
+            question: { type: "string", example: "What is the refund policy?" },
+            answer: { type: "string", description: "Concatenated relevant passages (present when found=true)" },
+            message: { type: "string", description: "Explanation shown when found=false" },
+            matches: { type: "array", items: { $ref: "#/components/schemas/AskMatch" } }
           }
         },
 
