@@ -1,218 +1,354 @@
-# Vector Database API
+# Vector DB PDF Search
 
-[![Node Version](https://img.shields.io/badge/node-%3E%3D18.x-brightgreen)](https://nodejs.org)
-[![Express](https://img.shields.io/badge/express-4.21-blue)](https://expressjs.com)
-[![Zvec](https://img.shields.io/badge/zvec-0.0.x-orange)](https://github.com/alibaba/zvec)
-[![License](https://img.shields.io/badge/license-ISC-lightgrey)](LICENSE)
-[![Author](https://img.shields.io/badge/author-Sandeep-blueviolet)](https://github.com/sandy13869)
+A full-stack vector search application built with Express, React, and Alibaba's
+[Zvec](https://github.com/alibaba/zvec). Upload text-based PDF files, index their
+contents locally, search one or all uploaded documents, and inspect the retrieved
+source passages and similarity scores.
 
-A production-ready demo application showcasing vector database functionality using the **Zvec** library by Alibaba. This application provides a complete API for managing vector embeddings, performing similarity searches, and handling vector data operations.
-
-**Author**: Sandeep  
-**License**: ISC  
-**Node**: >= 18.x  
-
----
-
-## Tech Stack
-
-| Category | Technology | Version |
-|---|---|---|
-| Runtime | Node.js | >= 18.x |
-| Framework | Express | 4.21.x |
-| Vector DB | Zvec | 0.0.x |
-| Docs | swagger-jsdoc / swagger-ui-express | Latest |
-| Security | Helmet | Latest |
-| Logging | Morgan | Latest |
-
----
+The project also exposes a general-purpose API for storing and querying
+768-dimensional document vectors.
 
 ## Features
 
-- **PDF Question Answering (RAG)** — Upload a PDF (≤ 50 MB), it is chunked, embedded, and stored in the vector DB; ask natural-language questions and get answers retrieved from the document
-- **Relevance gating** — When nothing relevant is found, the API responds with `found: false` and a clear message instead of returning noise
-- **React UI** — Vite + Tailwind single-page app for drag-and-drop upload and a chat-style Q&A interface (`client/`)
-- Vector Database Integration — Zvec high-performance in-process vector DB
-- RESTful API — Full CRUD for vector data
-- Swagger Documentation — Interactive UI at `/api-docs`
-- Health Check Endpoints — Monitor app and database status
-- Similarity Search — Cosine similarity with scalar field filtering
-- Error Handling — Centralized error middleware
-- Security — Helmet.js HTTP headers + CORS
-- Demo Data — 12 pre-loaded documents for immediate testing
+- PDF upload and ingestion, with a 50 MB limit and PDF signature validation
+- Page-aware text extraction and overlapping text chunks
+- Local 384-dimensional embeddings using `Xenova/all-MiniLM-L6-v2`
+- Retrieval across all PDFs or scoped to one uploaded document
+- Relevance filtering with a configurable score threshold
+- Persistent, in-process Zvec storage with no separate database server
+- Responsive React, Vite, and Tailwind UI served by Express in production
+- General 768-dimensional vector CRUD and similarity-search API
+- Swagger/OpenAPI explorer at `/api-docs`
+- Helmet security headers, configurable CORS, request logging, and JSON errors
+- Health checks for both Zvec collections
+- Deterministic PDF chunking tests
 
----
+> The PDF question endpoint is extractive retrieval. Its `answer` is composed of
+> the most relevant source passages; it does not call a generative LLM.
 
-## Quick Start
+## Technology
+
+| Area | Technology |
+|---|---|
+| Server | Node.js 18+, Express 5 |
+| Vector database | `@zvec/zvec` 0.5 |
+| Embeddings | `@xenova/transformers`, all-MiniLM-L6-v2 |
+| PDF parsing | `pdf-parse` |
+| Uploads | Multer memory storage |
+| Client | React 18, Vite 5, Tailwind CSS 3 |
+| API documentation | Swagger UI and swagger-jsdoc |
+| Security and logging | Helmet, CORS, Morgan |
+
+## Quick start
+
+Prerequisites:
+
+- Node.js 18 or newer
+- npm
+- A supported Zvec platform: Windows x64, Linux x64/ARM64, or macOS ARM64
 
 ```bash
 npm install
-cp .env.example .env    # or create .env manually (see Configuration)
+cp .env.example .env
 npm run build
 npm start
 ```
 
-Open http://localhost:3000 for the UI or http://localhost:3000/api-docs for the API explorer.
+Then open:
 
-> The first call to `/api/pdf/upload` or `/api/pdf/ask` downloads the
-> `all-MiniLM-L6-v2` embedding model (~90 MB) once and caches it locally.
+- Application UI: http://localhost:3000
+- Swagger API explorer: http://localhost:3000/api-docs
+- Health check: http://localhost:3000/api/health
 
----
+On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp` if
+`cp` is unavailable.
 
-## API Documentation
+The embedding model is downloaded and cached the first time a real PDF is
+ingested. The initial download is approximately 90 MB and requires network
+access. Asking a question when no PDFs exist does not load the model.
 
-Interactive Swagger UI: http://localhost:3000/api-docs
+## Development
 
-### Health
+Run the server and Vite client in separate terminals:
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/api/health` | Basic health status |
-| GET | `/api/health/zvec` | Zvec database connection stats |
+```bash
+# terminal 1: Express API on http://localhost:3000
+npm run dev
 
-### PDF Question Answering
-
-| Method | Path | Description |
-|---|---|---|
-| POST | `/api/pdf/upload` | Upload + ingest a PDF (`multipart/form-data`, field `file`, ≤ 50 MB) |
-| POST | `/api/pdf/ask` | Ask a question; retrieves relevant chunks from ingested PDFs |
-| GET | `/api/pdf/documents` | List ingested PDFs |
-| DELETE | `/api/pdf/documents/:docId` | Delete an ingested PDF and its chunks |
-
-**Ask response** — when relevant content is found:
-
-```json
-{ "success": true, "found": true, "question": "...", "answer": "...", "matches": [ { "score": 0.82, "text": "...", "source": "doc.pdf", "page": 3, "docId": "..." } ] }
+# terminal 2: Vite UI on http://localhost:5173
+npm run dev:client
 ```
 
-When nothing relevant is found:
+Vite proxies `/api` requests to the Express server. In production,
+`npm run build` creates `client/dist`, and Express serves that build from `/`.
 
-```json
-{ "success": true, "found": false, "message": "No relevant information for your question was found in the uploaded PDF(s)...", "matches": [] }
-```
+## Available scripts
 
-### Documents
-
-| Method | Path | Description |
-|---|---|---|
-| POST | `/api/documents/insert` | Insert multiple documents |
-| POST | `/api/documents/insert-one` | Insert single document |
-| POST | `/api/documents/query` | Vector similarity search |
-| GET | `/api/documents/fetch/:id` | Fetch document by ID |
-| DELETE | `/api/documents/:id` | Delete document by ID |
-| DELETE | `/api/documents/batch` | Batch delete by IDs |
-| DELETE | `/api/documents/filter` | Delete by filter condition |
-| GET | `/api/documents/stats` | Collection statistics |
-
----
+| Command | Purpose |
+|---|---|
+| `npm start` | Start the production Express server |
+| `npm run dev` | Start the server with Nodemon |
+| `npm run dev:client` | Start the Vite development server |
+| `npm run build` | Build the React client for production |
+| `npm test` | Run deterministic PDF chunking tests |
+| `npm run check` | Run tests and build the client |
 
 ## Configuration
+
+Create `.env` from [.env.example](.env.example):
 
 ```env
 PORT=3000
 NODE_ENV=development
-# Minimum cosine similarity for a PDF chunk to count as a relevant answer (default 0.2)
 RAG_SCORE_THRESHOLD=0.2
-# Optional persistent-data location and browser origin
 ZVEC_DATA_PATH=./zvec_data
-CORS_ORIGIN=http://localhost:5173
+# CORS_ORIGIN=http://localhost:5173
 ```
 
----
+| Variable | Default | Description |
+|---|---|---|
+| `PORT` | `3000` | HTTP server port |
+| `NODE_ENV` | unset | Use `development` to include stack traces in API errors |
+| `RAG_SCORE_THRESHOLD` | `0.2` | Minimum inner-product score for a PDF passage to be returned |
+| `ZVEC_DATA_PATH` | `<project>/zvec_data` | Persistent Zvec collections and PDF registry location |
+| `CORS_ORIGIN` | all origins | Allowed browser origin when explicitly configured |
 
-## Zvec Schema
+PDF embeddings are normalized, so their inner-product score is equivalent to
+cosine similarity. Higher scores are more relevant.
 
-- **Collection**: `documents`
-- **Vector Dimensions**: 768 (float32)
-- **Metric**: Inner product (equivalent to cosine similarity for normalized embeddings)
-- **Index**: HNSW
-- **Storage**: Persistent (write-ahead logging)
+## Application workflow
+
+1. Upload a text-based PDF from the UI or `POST /api/pdf/upload`.
+2. The server extracts text page by page.
+3. Text is split into chunks of up to 1,000 characters with 200-character overlap.
+4. Each chunk is embedded into a normalized 384-dimensional vector.
+5. Chunks and metadata are stored in the `pdf_chunks` Zvec collection.
+6. Questions are embedded with the same model and matched against relevant chunks.
+7. Results below `RAG_SCORE_THRESHOLD` are omitted.
+
+Scanned or image-only PDFs are not OCR-processed and normally return HTTP 422
+because they contain no extractable text.
+
+## API overview
+
+All JSON responses contain a `success` boolean. Errors use this shape:
+
+```json
+{
+  "success": false,
+  "error": {
+    "message": "Description of the problem"
+  }
+}
+```
+
+### Health endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/health` | Server health and version |
+| `GET` | `/api/health/zvec` | Statistics for `documents` and `pdf_chunks` |
+
+### PDF endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/pdf/upload` | Upload and index a PDF |
+| `POST` | `/api/pdf/ask` | Retrieve passages relevant to a question |
+| `GET` | `/api/pdf/documents` | List uploaded PDF metadata |
+| `DELETE` | `/api/pdf/documents/:docId` | Delete a PDF and all its chunks |
+
+#### Upload a PDF
+
+The multipart field must be named `file`. Files are held in memory while being
+parsed and may not exceed 50 MB.
+
+```bash
+curl -X POST http://localhost:3000/api/pdf/upload \
+  -F "file=@report.pdf"
+```
+
+Successful response:
+
+```json
+{
+  "success": true,
+  "message": "PDF ingested successfully",
+  "data": {
+    "docId": "5e98e2c7336f4e3a965579e83d56fbad",
+    "filename": "report.pdf",
+    "sizeBytes": 482113,
+    "numPages": 12,
+    "chunkCount": 34,
+    "uploadedAt": "2026-06-21T10:00:00.000Z"
+  }
+}
+```
+
+#### Ask a question
+
+`docId` is optional. Omit it to search every uploaded PDF. `topk` is optional
+and must be an integer from 1 to 20; its default is 4. Questions are limited to
+2,000 characters.
+
+```bash
+curl -X POST http://localhost:3000/api/pdf/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question":"What is the refund policy?","topk":4}'
+```
+
+When relevant content is found:
+
+```json
+{
+  "success": true,
+  "found": true,
+  "question": "What is the refund policy?",
+  "answer": "Refunds are issued within 30 days...",
+  "matches": [
+    {
+      "score": 0.82,
+      "text": "Refunds are issued within 30 days...",
+      "source": "policy.pdf",
+      "page": 3,
+      "docId": "5e98e2c7336f4e3a965579e83d56fbad"
+    }
+  ]
+}
+```
+
+When no content meets the threshold, the endpoint still returns HTTP 200 with
+`found: false`, a user-facing message, and an empty `matches` array.
+
+### General document-vector endpoints
+
+These endpoints operate only on the `documents` collection. Every inserted or
+query vector must contain exactly 768 finite numbers. `topk` must be an integer
+from 1 to 100.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/documents/insert` | Insert an array of documents |
+| `POST` | `/api/documents/insert-one` | Insert one document |
+| `POST` | `/api/documents/query` | Similarity search with an optional scalar filter |
+| `GET` | `/api/documents/fetch/:id` | Fetch a document by ID |
+| `DELETE` | `/api/documents/:id` | Delete one document |
+| `DELETE` | `/api/documents/batch` | Delete documents by ID array |
+| `DELETE` | `/api/documents/filter` | Delete documents matching a filter |
+| `GET` | `/api/documents/stats` | Read collection statistics |
+
+Example query:
+
+```json
+POST /api/documents/query
+{
+  "collectionName": "documents",
+  "queryVector": ["768 finite numeric values"],
+  "topk": 5,
+  "filter": "year > 2020"
+}
+```
+
+The application seeds 12 sample records only when the `documents` collection is
+empty. The sample vectors are normalized unit vectors.
+
+## Storage schema
+
+### `documents`
 
 | Field | Type |
 |---|---|
-| id | String |
-| title | String |
-| category | String |
-| year | Integer |
-| embedding | Float32[768] |
+| `id` | String primary ID |
+| `title` | String |
+| `category` | String |
+| `year` | Int32 |
+| `embedding` | Float32 vector, 768 dimensions |
 
----
+### `pdf_chunks`
 
-## Testing
+| Field | Type |
+|---|---|
+| `id` | String primary ID (`docId_chunkIndex`) |
+| `text` | String |
+| `source` | Original sanitized filename |
+| `docId` | String |
+| `page` | Int32 |
+| `chunkIndex` | Int32 |
+| `embedding` | Float32 vector, 384 dimensions |
+
+Uploaded-document metadata is stored atomically in
+`<ZVEC_DATA_PATH>/pdf_registry.json`. Zvec uses write-ahead logging for durable
+collection storage.
+
+## Project structure
+
+```text
+.
+|-- client/
+|   |-- src/
+|   |   |-- components/       Upload, document list, and chat UI
+|   |   |-- api.js            PDF API client
+|   |   `-- App.jsx           Responsive application layout
+|   `-- vite.config.js        Vite config and development proxy
+|-- src/
+|   |-- config/
+|   |   |-- database.js       Zvec collection and CRUD service
+|   |   `-- swagger.js        OpenAPI definition
+|   |-- middleware/           Upload, logging, and error middleware
+|   |-- routes/               Health, document, and PDF endpoints
+|   |-- services/             Embedding, PDF parsing, and retrieval logic
+|   |-- utils/demoData.js     Conditional sample-data seed
+|   `-- index.js              Express application entry point
+|-- tests/pdfService.test.js  Deterministic chunking tests
+|-- .env.example
+`-- package.json
+```
+
+## Testing and verification
 
 ```bash
-# Run the automated test script
-node test-api.js
+# Unit tests
+npm test
 
-# Or use curl
+# Unit tests plus production client build
+npm run check
+```
+
+With the server running, basic smoke checks are also available:
+
+```bash
 curl http://localhost:3000/api/health
 curl http://localhost:3000/api/health/zvec
+curl http://localhost:3000/api/pdf/documents
 ```
 
----
+`test-api.js` is a manual smoke-test client and expects a server to already be
+running on port 3000.
 
-## Project Structure
+## Operational notes
 
-```
-src/
-  config/
-    database.js        Zvec database service (documents + pdf_chunks collections)
-    swagger.js         Swagger/OpenAPI config
-  middleware/
-    errorHandler.js    Global error handler
-    requestLogger.js   Morgan request logging
-    upload.js          Multer PDF upload (50 MB limit, PDF-only)
-  routes/
-    health.js          Health endpoints
-    documents.js       Document CRUD + query
-    pdf.js             PDF upload / ask / list / delete
-  services/
-    embeddingService.js  all-MiniLM-L6-v2 text embeddings (384-d)
-    pdfService.js        PDF text extraction + chunking
-    ragService.js        Ingest + retrieval + document registry
-  utils/
-    demoData.js        12-sample-doc seeder
-  index.js             Express app entry point
-
-client/                React + Vite + Tailwind UI
-  src/
-    api.js             Backend API client
-    App.jsx            Layout (upload + document list + chat)
-    components/        UploadPanel, DocumentList, ChatPanel
-```
-
----
-
-## Frontend (React + Vite + Tailwind)
-
-A single-page UI lives in [client/](client/): drag-and-drop PDF upload with progress,
-a document list (scope questions to one PDF or search all), and a chat-style Q&A panel
-that shows answers with their source passages and similarity scores.
-
-```bash
-# terminal 1
-npm run dev
-
-# terminal 2
-npm run dev:client  # http://localhost:5173, proxies /api to :3000
-```
-
-For production, `npm run build && npm start` serves the compiled UI and API from port 3000.
-
----
+- Zvec collections are opened read-write by one application process. Starting a
+  second server against the same `ZVEC_DATA_PATH` can fail with a collection lock
+  error. Use a different data path for isolated test instances.
+- The PDF registry and Zvec collection should be backed up together.
+- Changing vector dimensions or index configuration requires a new collection or
+  an explicit data migration.
+- Upload processing is synchronous within the request and may take time for large
+  PDFs because embeddings are generated chunk by chunk.
+- The production UI is available only after `npm run build` creates `client/dist`.
 
 ## Security
 
-- Helmet.js — HTTP security headers
-- CORS — Cross-origin access control
-- dotenv — Environment variable management
-- Input validation on all routes
-- `.env` and `zvec_data/` in `.gitignore`
-
----
+- Helmet configures common HTTP security headers.
+- CORS can be restricted with `CORS_ORIGIN`.
+- JSON request bodies are limited to 10 MB.
+- PDF uploads are limited to 50 MB and checked for a `%PDF-` signature.
+- Filenames are sanitized before being persisted.
+- API inputs, vector dimensions, numeric values, IDs, and query limits are validated.
+- `.env` and `zvec_data/` are excluded from version control.
 
 ## License
 
 ISC
 
-**Developer**: Sandeep
+Developer: Sandeep

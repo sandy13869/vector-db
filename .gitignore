@@ -80,3 +80,6 @@ ehthumbs.db
 Thumbs.db
 
 .commandcode/
+tests/
+test_col/
+pdf_collection/
