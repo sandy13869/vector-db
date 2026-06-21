@@ -27,15 +27,29 @@ async function embedText(text) {
 }
 
 /**
- * Embed an array of texts sequentially, returning one vector per input.
+ * Embed an array of texts in batches, returning one vector per input.
+ * Batched inference is much faster (~10-20x) than sequential on large PDFs.
  * @param {string[]} texts
  * @returns {Promise<number[][]>}
  */
 async function embedBatch(texts) {
+  const embedder = await getEmbedder();
+
+  // @xenova/transformers supports batched inference — split into manageable
+  // batches to avoid OOM on large documents.
+  const BATCH_SIZE = 32;
   const vectors = [];
-  for (const text of texts) {
-    vectors.push(await embedText(text));
+
+  for (let i = 0; i < texts.length; i += BATCH_SIZE) {
+    const batch = texts.slice(i, i + BATCH_SIZE);
+    const output = await embedder(batch, { pooling: "mean", normalize: true });
+    // output.data is a flat Float32Array of shape [batchSize, 384]
+    for (let j = 0; j < batch.length; j++) {
+      const start = j * EMBEDDING_DIMENSION;
+      vectors.push(Array.from(output.data.slice(start, start + EMBEDDING_DIMENSION)));
+    }
   }
+
   return vectors;
 }
 

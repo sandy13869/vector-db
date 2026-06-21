@@ -2,16 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-#root {
-  height: 100%;
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    @apply bg-panel text-slate-800 transition-colors duration-200;
+  }
+
+  .dark body,
+  body.dark {
+    @apply bg-panel-dark text-slate-100;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-300;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-slate-600;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400;
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-500;
+  }
 }
 
-body {
-  margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: #f8fafc;
+@layer components {
+  .theme-toggle-btn {
+    @apply relative flex h-8 w-14 cursor-pointer items-center rounded-full p-1 transition-colors duration-300;
+    @apply bg-slate-200;
+  }
+  .dark .theme-toggle-btn {
+    @apply bg-slate-700;
+  }
+
+  .theme-toggle-knob {
+    @apply h-5 w-5 rounded-full bg-white shadow-md transition-transform duration-300;
+    @apply translate-x-0;
+  }
+  .dark .theme-toggle-knob {
+    @apply translate-x-6;
+  }
 }
 
 button,
@@ -23,6 +69,48 @@ input {
 button:focus-visible,
 textarea:focus-visible,
 a:focus-visible {
-  outline: 2px solid #4f6cf7;
-  outline-offset: 2px;
+  @apply outline-2 outline-offset-2 outline-brand-500;
+}
+
+/* Markdown content styling */
+.prose-response {
+  @apply leading-relaxed;
+}
+.prose-response p {
+  @apply mb-2 last:mb-0;
+}
+.prose-response ul,
+.prose-response ol {
+  @apply mb-2 ml-4 list-inside;
+}
+.prose-response ul {
+  @apply list-disc;
+}
+.prose-response ol {
+  @apply list-decimal;
+}
+.prose-response code {
+  @apply rounded bg-black/10 px-1.5 py-0.5 text-sm font-mono;
+}
+.dark .prose-response code {
+  @apply bg-white/10;
+}
+.prose-response pre {
+  @apply mb-3 overflow-x-auto rounded-lg last:mb-0;
+}
+.prose-response blockquote {
+  @apply mb-2 border-l-4 border-brand-300 pl-3 italic last:mb-0;
+}
+.dark .prose-response blockquote {
+  @apply border-brand-600;
+}
+.prose-response a {
+  @apply text-brand-600 underline hover:text-brand-700;
+}
+.dark .prose-response a {
+  @apply text-brand-400 hover:text-brand-300;
+}
+.prose-response h3,
+.prose-response h4 {
+  @apply mb-1 mt-3 font-semibold;
 }

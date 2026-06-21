@@ -113,7 +113,13 @@ class DatabaseService {
       }
     }));
 
-    collection.insertSync(data);
+    // Zvec has a max write batch size of 1024 — insert in batches to
+    // support large PDFs that generate many thousands of chunks.
+    const BATCH_SIZE = 1024;
+    for (let i = 0; i < data.length; i += BATCH_SIZE) {
+      const batch = data.slice(i, i + BATCH_SIZE);
+      collection.insertSync(batch);
+    }
     return chunks.length;
   }
 
